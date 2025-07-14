@@ -1,8 +1,8 @@
 #ifndef QCONTROLLER_H
 #define QCONTROLLER_H
 
-#include <QObject>
-#include <QTimer>
+// #include <QObject>
+// #include <QTimer>
 #include "controller.h"
 
 class QGLWidget;

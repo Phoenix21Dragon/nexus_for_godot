@@ -22,19 +22,19 @@ using namespace nx;
 //TODO how to auto-guess ram and gpu?
 Controller::Controller(): max_tokens(300), max_ram(512*1000*1000), max_gpu(256*1000*1000) {
 	ram_cache.setCapacity(max_ram);
-	gpu_cache.setCapacity(max_gpu);
+	// gpu_cache.setCapacity(max_gpu);
 
 	addCache(&ram_cache);
-	addCache(&gpu_cache);
+	// addCache(&gpu_cache);
 	//setMaxTokens(max_tokens);
 }
 
-void Controller::setWidget(QGLWidget *widget) {
-	//TODO check destruction of widget
-#ifdef SHARED_CONTEXT
-	gpu_cache.shared = widget; //new QGLWidget(NULL, widget);
-#endif
-}
+// void Controller::setWidget(QGLWidget *widget) {
+// 	//TODO check destruction of widget
+// #ifdef SHARED_CONTEXT
+// 	gpu_cache.shared = widget; //new QGLWidget(NULL, widget);
+// #endif
+// }
 
 void Controller::load(Nexus *nexus) {
 	ram_cache.add(nexus);
@@ -52,7 +52,7 @@ bool Controller::hasCacheChanged() {
 
 void Controller::endFrame() {
 #ifndef SHARED_CONTEXT
-	gpu_cache.dropGpu();
+	// gpu_cache.dropGpu();
 #endif
 	updatePriorities();
 }

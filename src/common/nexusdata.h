@@ -92,16 +92,16 @@ public:
 
 	NexusData();
 	virtual ~NexusData();
-	bool open(const char *uri);
-	void close();
-	virtual void flush();
+	// bool open(const char *uri);
+	// void close();
+	// virtual void flush();
 
 	vcg::Sphere3f &boundingSphere() { return header.sphere; }
 	bool intersects(vcg::Ray3f &r, float &distance);
 
 	uint32_t size(uint32_t node);
 	uint64_t loadRam(uint32_t node);
-	uint64_t dropRam(uint32_t node, bool write = false);
+	// uint64_t dropRam(uint32_t node, bool write = false);
 
 	void loadHeader();
 	void loadHeader(char *buffer);
@@ -111,7 +111,7 @@ public:
 	virtual void loadIndex();
 	virtual void loadIndex(char *buffer);
 
-	virtual void loadImageFromData(TextureData& data, int textureIndex) { };
+	// virtual void loadImageFromData(TextureData& data, int textureIndex) { };
 
 	//FILE *file;
 

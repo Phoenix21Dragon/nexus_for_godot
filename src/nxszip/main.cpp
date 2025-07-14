@@ -4,11 +4,11 @@
 #include <vcg/complex/algorithms/update/normal.h> */
 
 
-#include "mesh.h"
+// #include "mesh.h"
 #include <wrap/io_trimesh/import.h>
 #include <wrap/io_trimesh/export.h>
 
-#include "mesh_coder.h"
+#include "meshcoder.h"
 
 //#include "../golomb.h"
 #include "watch.h"

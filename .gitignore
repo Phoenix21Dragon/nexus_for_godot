@@ -42,6 +42,7 @@ _deps
 *.la
 *.a
 *.lib
+*.os
 
 # Executables
 *.exe

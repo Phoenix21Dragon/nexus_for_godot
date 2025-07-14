@@ -22,11 +22,11 @@ for more details.
 #include <vcg/space/line3.h>
 #include <vcg/space/intersection3.h>
 
-#include "../nxszip/meshdecoder.h"
-#include <corto/decoder.h>
+// #include "../nxszip/meshdecoder.h"
+// #include <corto/decoder.h>
 
 //#if _MSC_VER >= 1800
-#include <random>
+// #include <random>
 //#endif
 
 #include <iostream>
@@ -44,51 +44,58 @@ NexusData::NexusData(): nodes(0), patches(0), textures(0), nodedata(0), textured
 }
 
 NexusData::~NexusData() {
-	close();
+	// close();
 	delete file;
 }
 
-bool NexusData::open(const char *_uri) {
+// bool NexusData::open(const char *_uri) {
 
-	file->setFileName(_uri);
-	if(!file->open(NexusFile::Read))
-		//file = fopen(_uri, "rb+");
-		//if(!file)
-		return false;
-	loadHeader();
-	loadIndex();
-	return true;
-}
+// 	file->setFileName(_uri);
+// 	if(!file->open(NexusFile::Read))
+// 		//file = fopen(_uri, "rb+");
+// 		//if(!file)
+// 		return false;
+// 	loadHeader();
+// 	loadIndex();
+// 	return true;
+// }
 
-void NexusData::close() {
-	flush();
-}
+// void NexusData::close() {
+// 	flush();
+// }
 
-void NexusData::flush() {
-	//flush
-	for(unsigned int i = 0; i < header.n_nodes; i++)
-		delete nodedata[i].memory;
+// void NexusData::flush() {
+// 	//flush
+// 	for(unsigned int i = 0; i < header.n_nodes; i++)
+// 		delete nodedata[i].memory;
 
-	delete []nodes;
-	delete []patches;
-	delete []textures;
-	delete []nodedata;
-	delete []texturedata;
-}
+// 	delete []nodes;
+// 	delete []patches;
+// 	delete []textures;
+// 	delete []nodedata;
+// 	delete []texturedata;
+// }
 
 void NexusData::loadHeader() {
 	//fread(&header, sizeof(Header), 1, file);
 	int readed = file->read((char *)&header, sizeof(Header));
 	if (readed != sizeof(Header))
-		throw std::string ("could not read header, file too short");
+		cout << "ERROR: could not read header, file too short" << endl;
+		return;
+		// throw std::string ("could not read header, file too short");
 	if(header.magic != 0x4E787320)
-		throw std::string("could not read header, probably not a nexus file");
+		cout << "ERROR: could not read header, probably not a nexus file" << endl;
+		return;
+		// throw std::string("could not read header, probably not a nexus file");
+	cout << "Read Header successfully" << endl;
 }
 
 void NexusData::loadHeader(char *buffer) {
 	header = *(Header *)buffer;
 	if(header.magic != 0x4E787320)
-		throw std::string("could not read header, probably not a nexus file");
+		cout << "ERROR: could not read header, probably not a nexus file" << endl;
+		return;
+		// throw std::string("could not read header, probably not a nexus file");
 }
 
 void NexusData::countRoots() {
@@ -154,168 +161,171 @@ uint64_t NexusData::loadRam(uint32_t n) {
 	Signature &sign = header.signature;
 	Node &node = nodes[n];
 	uint64_t offset = node.getBeginOffset();
-
+	
 	NodeData &d = nodedata[n];
 	uint64_t compressed_size = node.getEndOffset() - offset;
-
+	
 	uint64_t size = node.nvert*sign.vertex.size() + node.nface*sign.face.size();
+	std::cout << "node.getSize(): " << node.getSize() << " | size: " << size << std::endl;;
 
 	if(!sign.isCompressed()) {
-
+		std::cout << "!sign.isCompressed(): " << !sign.isCompressed() << std::endl;
 		d.memory = (char *)file->map(offset, size);
 
 	} else {
+		std::cout << "else" << std::endl;
 
-		char *buffer = new char[compressed_size];
-		file->seek(offset);
-		int64_t r = file->read(buffer, compressed_size);
-		assert(r == (int64_t)compressed_size);
+		// char *buffer = new char[compressed_size];
+		// file->seek(offset);
+		// int64_t r = file->read(buffer, compressed_size);
+		// assert(r == (int64_t)compressed_size);
 
-		d.memory = new char[size];
+		// d.memory = new char[size];
 
-		int iterations = 1;
+		// int iterations = 1;
 
-		if(sign.flags & Signature::MECO) {
-			meco::MeshDecoder coder(node, d, patches, sign);
-			coder.decode(compressed_size, (unsigned char *)buffer);
+		// if(sign.flags & Signature::MECO) {
+		// 	meco::MeshDecoder coder(node, d, patches, sign);
+		// 	coder.decode(compressed_size, (unsigned char *)buffer);
 
-		} else if(sign.flags & Signature::CORTO) {
+		// } else if(sign.flags & Signature::CORTO) {
 
-			crt::Decoder decoder(compressed_size, (unsigned char *)buffer);
+		// 	crt::Decoder decoder(compressed_size, (unsigned char *)buffer);
 
-			decoder.setPositions((float *)d.coords());
-			if(sign.vertex.hasNormals())
-				decoder.setNormals((int16_t *)d.normals(sign, node.nvert));
-			if(sign.vertex.hasColors())
-				decoder.setColors((unsigned char *)d.colors(sign, node.nvert));
-			if(sign.vertex.hasTextures())
-				decoder.setUvs((float *)d.texCoords(sign, node.nvert));
-			if(node.nface)
-				decoder.setIndex(d.faces(sign, node.nvert));
+		// 	decoder.setPositions((float *)d.coords());
+		// 	if(sign.vertex.hasNormals())
+		// 		decoder.setNormals((int16_t *)d.normals(sign, node.nvert));
+		// 	if(sign.vertex.hasColors())
+		// 		decoder.setColors((unsigned char *)d.colors(sign, node.nvert));
+		// 	if(sign.vertex.hasTextures())
+		// 		decoder.setUvs((float *)d.texCoords(sign, node.nvert));
+		// 	if(node.nface)
+		// 		decoder.setIndex(d.faces(sign, node.nvert));
 
-			decoder.decode();
-		}
+		// 	decoder.decode();
+		// }
 
-		//Shuffle points in compressed point clouds
-		if(!sign.face.hasIndex()) {
-			std::vector<int> order(node.nvert);
-			for(int i = 0; i < node.nvert; i++)
-				order[i] = i;
+		// //Shuffle points in compressed point clouds
+		// if(!sign.face.hasIndex()) {
+		// 	std::vector<int> order(node.nvert);
+		// 	for(int i = 0; i < node.nvert; i++)
+		// 		order[i] = i;
 
-			unsigned seed = 0;
-			std::shuffle (order.begin(), order.end(), std::default_random_engine(seed));
-			std::vector<vcg::Point3f> coords(node.nvert);
-			for(int i =0; i < node.nvert; i++)
-				coords[i] = d.coords()[order[i]];
-			memcpy(d.coords(), &*coords.begin(), sizeof(Point3f)*node.nvert);
+		// 	unsigned seed = 0;
+		// 	std::shuffle (order.begin(), order.end(), std::default_random_engine(seed));
+		// 	std::vector<vcg::Point3f> coords(node.nvert);
+		// 	for(int i =0; i < node.nvert; i++)
+		// 		coords[i] = d.coords()[order[i]];
+		// 	memcpy(d.coords(), &*coords.begin(), sizeof(Point3f)*node.nvert);
 
-			if(sign.vertex.hasNormals()) {
-				Point3s *n = d.normals(sign, node.nvert);
-				std::vector<Point3s> normals(node.nvert);
-				for(int i =0; i < node.nvert; i++)
-					normals[i] = n[order[i]];
-				memcpy(n, &*normals.begin(), sizeof(Point3s)*node.nvert);
-			}
+		// 	if(sign.vertex.hasNormals()) {
+		// 		Point3s *n = d.normals(sign, node.nvert);
+		// 		std::vector<Point3s> normals(node.nvert);
+		// 		for(int i =0; i < node.nvert; i++)
+		// 			normals[i] = n[order[i]];
+		// 		memcpy(n, &*normals.begin(), sizeof(Point3s)*node.nvert);
+		// 	}
 
-			if(sign.vertex.hasColors()) {
-				Color4b *c = d.colors(sign, node.nvert);
-				std::vector<Color4b> colors(node.nvert);
-				for(int i =0; i < node.nvert; i++)
-					colors[i] = c[order[i]];
-				memcpy(c, &*colors.begin(), sizeof(Color4b)*node.nvert);
-			}
-		}
+		// 	if(sign.vertex.hasColors()) {
+		// 		Color4b *c = d.colors(sign, node.nvert);
+		// 		std::vector<Color4b> colors(node.nvert);
+		// 		for(int i =0; i < node.nvert; i++)
+		// 			colors[i] = c[order[i]];
+		// 		memcpy(c, &*colors.begin(), sizeof(Color4b)*node.nvert);
+		// 	}
+		// }
 	}
 
 	assert(d.memory);
 	if(header.n_textures) {
-		//be sure to load images
-		for(uint32_t p = node.first_patch; p < node.last_patch(); p++) {
-			uint32_t t = patches[p].texture;
-			if(t == 0xffffffff) continue;
+		std::cout << "header.n_textures: " << (header.n_textures != NULL) << std::endl;
+		// //be sure to load images
+		// for(uint32_t p = node.first_patch; p < node.last_patch(); p++) {
+		// 	uint32_t t = patches[p].texture;
+		// 	if(t == 0xffffffff) continue;
 
-			TextureData &data = texturedata[t];
-			data.count_ram++;
-			if(data.count_ram > 1)
-				continue;
+		// 	TextureData &data = texturedata[t];
+		// 	data.count_ram++;
+		// 	if(data.count_ram > 1)
+		// 		continue;
 
-			Texture &texture = textures[t];
-			data.memory = (char *)file->map(texture.getBeginOffset(), texture.getSize());
-			if(!data.memory) {
-				cerr << "Failed mapping texture data" << endl;
-				exit(0);
-			}
+		// 	Texture &texture = textures[t];
+		// 	data.memory = (char *)file->map(texture.getBeginOffset(), texture.getSize());
+		// 	if(!data.memory) {
+		// 		cerr << "Failed mapping texture data" << endl;
+		// 		exit(0);
+		// 	}
 
-			loadImageFromData(data, t);
+		// 	loadImageFromData(data, t);
 
-			/*
-			QImage img;
-			bool success = img.loadFromData((uchar *)data.memory, texture.getSize());
-			file->unmap((uchar *)data.memory);
+		// 	/*
+		// 	QImage img;
+		// 	bool success = img.loadFromData((uchar *)data.memory, texture.getSize());
+		// 	file->unmap((uchar *)data.memory);
 
-			if(!success) {
-				cerr << "Failed loading texture" << endl;
-				exit(0);
-			}
+		// 	if(!success) {
+		// 		cerr << "Failed loading texture" << endl;
+		// 		exit(0);
+		// 	}
 
-			img = img.convertToFormat(QImage::Format_RGBA8888);
-			data.width = img.width();
-			data.height = img.height();
+		// 	img = img.convertToFormat(QImage::Format_RGBA8888);
+		// 	data.width = img.width();
+		// 	data.height = img.height();
 
-			int imgsize = data.width*data.height*4;
-			data.memory = new char[imgsize];
+		// 	int imgsize = data.width*data.height*4;
+		// 	data.memory = new char[imgsize];
 
-			//flip memory for texture
-			int linesize = img.width()*4;
-			char *mem = data.memory + linesize*(img.height()-1);
-			for(int i = 0; i < img.height(); i++) {
-				memcpy(mem, img.scanLine(i), linesize);
-				mem -= linesize;
-			}
-			*/
-			int imgsize = data.width * data.height * 4;
-			size += imgsize;
-		}
+		// 	//flip memory for texture
+		// 	int linesize = img.width()*4;
+		// 	char *mem = data.memory + linesize*(img.height()-1);
+		// 	for(int i = 0; i < img.height(); i++) {
+		// 		memcpy(mem, img.scanLine(i), linesize);
+		// 		mem -= linesize;
+		// 	}
+		// 	*/
+		// 	int imgsize = data.width * data.height * 4;
+		// 	size += imgsize;
+		// }
 	}
 	return size;
 }
 
-uint64_t NexusData::dropRam(uint32_t n, bool write) {
-	Node &node = nodes[n];
-	NodeData &data = nodedata[n];
+// uint64_t NexusData::dropRam(uint32_t n, bool write) {
+// 	Node &node = nodes[n];
+// 	NodeData &data = nodedata[n];
 
-	assert(!write);
-	assert(!data.vbo);
-	assert(data.memory);
+// 	assert(!write);
+// 	assert(!data.vbo);
+// 	assert(data.memory);
 
-	if(!header.signature.isCompressed()) //not compressed.
-		file->unmap((unsigned char *)data.memory);
-	else
-		delete []data.memory;
+// 	if(!header.signature.isCompressed()) //not compressed.
+// 		file->unmap((unsigned char *)data.memory);
+// 	else
+// 		delete []data.memory;
 
-	data.memory = NULL;
+// 	data.memory = NULL;
 
-	//report RAM size for compressed meshes.
-	uint32_t size = node.nvert * header.signature.vertex.size() +
-				node.nface * header.signature.face.size();
+// 	//report RAM size for compressed meshes.
+// 	uint32_t size = node.nvert * header.signature.vertex.size() +
+// 				node.nface * header.signature.face.size();
 
-	if(header.n_textures) {
-		for(uint32_t p = node.first_patch; p < node.last_patch(); p++) {
-			uint32_t t = patches[p].texture;
-			if(t == 0xffffffff) continue;
+// 	if(header.n_textures) {
+// 		for(uint32_t p = node.first_patch; p < node.last_patch(); p++) {
+// 			uint32_t t = patches[p].texture;
+// 			if(t == 0xffffffff) continue;
 
-			TextureData &tdata = texturedata[t];
-			tdata.count_ram--;
-			if(tdata.count_ram != 0) continue;
+// 			TextureData &tdata = texturedata[t];
+// 			tdata.count_ram--;
+// 			if(tdata.count_ram != 0) continue;
 
-			file->unmap((unsigned char *)tdata.memory);
-			//delete []tdata.memory;
-			tdata.memory = NULL;
-			size += tdata.width*tdata.height*4;
-		}
-	}
-	return size;
-}
+// 			file->unmap((unsigned char *)tdata.memory);
+// 			//delete []tdata.memory;
+// 			tdata.memory = NULL;
+// 			size += tdata.width*tdata.height*4;
+// 		}
+// 	}
+// 	return size;
+// }
 
 
 //local structure for keeping track of nodes and their distance

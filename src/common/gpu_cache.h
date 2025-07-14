@@ -23,12 +23,12 @@ for more details.
 #include "token.h"
 #include <wrap/gcache/cache.h>
 
-#include <QThread>
+// #include <QThread>
 //#include <QWindow>
 //#define SHARED_CONTEXT
 
 #ifdef SHARED_CONTEXT
-#include <QGLContext>
+// #include <QGLContext>
 #endif
 
 #include <iostream>

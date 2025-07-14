@@ -18,7 +18,7 @@ namespace nx {
 		virtual long long int write(char* from, size_t length) = 0;
 		virtual size_t size() = 0;
 		virtual void* map(size_t from, size_t size) = 0;
-		virtual bool unmap(void* mapped) = 0;
+		virtual bool unmap(void* mapped, size_t size) = 0;
 		virtual bool seek(size_t to) = 0;
 	};
 }
