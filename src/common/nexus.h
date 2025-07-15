@@ -37,6 +37,8 @@ public:
 	void loadIndex();
 	void loadIndex(char *buffer);
 
+	void loadImageFromData(nx::TextureData& data, int textureIndex) override;
+
 	bool loaded;
 	bool http_stream;
 

@@ -239,24 +239,24 @@ uint64_t NexusData::loadRam(uint32_t n) {
 	assert(d.memory);
 	if(header.n_textures) {
 		std::cout << "header.n_textures: " << (header.n_textures != NULL) << std::endl;
-		// //be sure to load images
-		// for(uint32_t p = node.first_patch; p < node.last_patch(); p++) {
-		// 	uint32_t t = patches[p].texture;
-		// 	if(t == 0xffffffff) continue;
+		//be sure to load images
+		for(uint32_t p = node.first_patch; p < node.last_patch(); p++) {
+			uint32_t t = patches[p].texture;
+			if(t == 0xffffffff) continue;
 
-		// 	TextureData &data = texturedata[t];
-		// 	data.count_ram++;
-		// 	if(data.count_ram > 1)
-		// 		continue;
+			TextureData &data = texturedata[t];
+			data.count_ram++;
+			if(data.count_ram > 1)
+				continue;
 
-		// 	Texture &texture = textures[t];
-		// 	data.memory = (char *)file->map(texture.getBeginOffset(), texture.getSize());
-		// 	if(!data.memory) {
-		// 		cerr << "Failed mapping texture data" << endl;
-		// 		exit(0);
-		// 	}
+			Texture &texture = textures[t];
+			data.memory = (char *)file->map(texture.getBeginOffset(), texture.getSize());
+			if(!data.memory) {
+				cerr << "Failed mapping texture data" << endl;
+				exit(0);
+			}
 
-		// 	loadImageFromData(data, t);
+			loadImageFromData(data, t);
 
 		// 	/*
 		// 	QImage img;
@@ -283,9 +283,9 @@ uint64_t NexusData::loadRam(uint32_t n) {
 		// 		mem -= linesize;
 		// 	}
 		// 	*/
-		// 	int imgsize = data.width * data.height * 4;
-		// 	size += imgsize;
-		// }
+			int imgsize = data.width * data.height * 4;
+			size += imgsize;
+		}
 	}
 	return size;
 }

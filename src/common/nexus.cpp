@@ -22,6 +22,11 @@ for more details.
 // #include "globalgl.h"
 #include "qtnexusfile.h"
 
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+
+#include <iostream>
+
 // #include <QGLWidget>
 
 
@@ -77,6 +82,58 @@ void Nexus::loadIndex(char *buffer) {
 
 	loaded = true;
 }
+
+void nx::Nexus::loadImageFromData(nx::TextureData& data, int t)
+{
+    Texture& texture = textures[t];
+
+    // mmap zum Lesen
+    void* mapped_data = file->map(texture.getBeginOffset(), texture.getSize());
+    if (!mapped_data) {
+        std::cerr << "Failed mapping texture data" << std::endl;
+        exit(1);
+    }
+
+    int width, height, channels;
+    unsigned char* image_data = stbi_load_from_memory(
+        reinterpret_cast<const stbi_uc*>(mapped_data),
+        static_cast<int>(texture.getSize()),
+        &width,
+        &height,
+        &channels,
+        4 // force RGBA
+    );
+
+    // unmap direkt danach
+    file->unmap(mapped_data, texture.getSize());
+
+    if (!image_data) {
+        std::cerr << "Failed loading texture (stb_image)" << std::endl;
+        exit(1);
+    }
+
+    data.width = width;
+    data.height = height;
+
+    int imgsize = width * height * 4;
+    data.memory = new char[imgsize];
+
+    // Bild vertikal flippen
+    int linesize = width * 4;
+    for (int i = 0; i < height; ++i) {
+        memcpy(
+            data.memory + (height - 1 - i) * linesize,
+            image_data + i * linesize,
+            linesize
+        );
+    }
+
+	std::cout << "loadImageFromData: width = " << data.width << ", height = " << data.height << std::endl;
+
+    // free stb buffer
+    stbi_image_free(image_data);
+}
+
 
 void Nexus::loadIndex() {
 	NexusData::loadIndex();
