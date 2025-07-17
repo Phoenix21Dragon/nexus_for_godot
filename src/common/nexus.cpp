@@ -128,7 +128,12 @@ void nx::Nexus::loadImageFromData(nx::TextureData& data, int t)
         );
     }
 
-	std::cout << "loadImageFromData: width = " << data.width << ", height = " << data.height << std::endl;
+	std::cout 
+	<< "    tex_index: " << t
+	<< " | data.width: " << data.width
+	<< " | data.height: " << data.height
+	<< " | imgsize: " << imgsize
+	<< std::endl;
 
     // free stb buffer
     stbi_image_free(image_data);

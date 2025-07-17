@@ -166,14 +166,18 @@ uint64_t NexusData::loadRam(uint32_t n) {
 	uint64_t compressed_size = node.getEndOffset() - offset;
 	
 	uint64_t size = node.nvert*sign.vertex.size() + node.nface*sign.face.size();
-	std::cout << "node.getSize(): " << node.getSize() << " | size: " << size << std::endl;;
+
+	std::cout << "loadRam(): node=" << n << std::endl;
+	std::cout 
+	<< "    offset: " << offset
+	<< " | compressed_size: " << compressed_size
+	<< " | size: " << size
+	<< std::endl;
 
 	if(!sign.isCompressed()) {
-		std::cout << "!sign.isCompressed(): " << !sign.isCompressed() << std::endl;
 		d.memory = (char *)file->map(offset, size);
 
 	} else {
-		std::cout << "else" << std::endl;
 
 		// char *buffer = new char[compressed_size];
 		// file->seek(offset);
@@ -238,7 +242,6 @@ uint64_t NexusData::loadRam(uint32_t n) {
 
 	assert(d.memory);
 	if(header.n_textures) {
-		std::cout << "header.n_textures: " << (header.n_textures != NULL) << std::endl;
 		//be sure to load images
 		for(uint32_t p = node.first_patch; p < node.last_patch(); p++) {
 			uint32_t t = patches[p].texture;
