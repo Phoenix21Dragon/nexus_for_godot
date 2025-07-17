@@ -88,15 +88,15 @@ void nx::Nexus::loadImageFromData(nx::TextureData& data, int t)
     Texture& texture = textures[t];
 
     // mmap zum Lesen
-    void* mapped_data = file->map(texture.getBeginOffset(), texture.getSize());
-    if (!mapped_data) {
+    data.memory = (char *)file->map(texture.getBeginOffset(), texture.getSize());
+    if (!data.memory) {
         std::cerr << "Failed mapping texture data" << std::endl;
         exit(1);
     }
 
     int width, height, channels;
     unsigned char* image_data = stbi_load_from_memory(
-        reinterpret_cast<const stbi_uc*>(mapped_data),
+        reinterpret_cast<const stbi_uc*>(data.memory),
         static_cast<int>(texture.getSize()),
         &width,
         &height,
@@ -105,7 +105,7 @@ void nx::Nexus::loadImageFromData(nx::TextureData& data, int t)
     );
 
     // unmap direkt danach
-    file->unmap(mapped_data, texture.getSize());
+    file->unmap((unsigned char*)data.memory, texture.getSize());
 
     if (!image_data) {
         std::cerr << "Failed loading texture (stb_image)" << std::endl;
@@ -116,17 +116,17 @@ void nx::Nexus::loadImageFromData(nx::TextureData& data, int t)
     data.height = height;
 
     int imgsize = width * height * 4;
-    data.memory = new char[imgsize];
+    // data.memory = new char[imgsize];
 
     // Bild vertikal flippen
-    int linesize = width * 4;
-    for (int i = 0; i < height; ++i) {
-        memcpy(
-            data.memory + (height - 1 - i) * linesize,
-            image_data + i * linesize,
-            linesize
-        );
-    }
+    // int linesize = width * 4;
+    // for (int i = 0; i < height; ++i) {
+    //     memcpy(
+    //         data.memory + (height - 1 - i) * linesize,
+    //         image_data + i * linesize,
+    //         linesize
+    //     );
+    // }
 
 	std::cout 
 	<< "    tex_index: " << t
