@@ -48,17 +48,17 @@ NexusData::~NexusData() {
 	delete file;
 }
 
-// bool NexusData::open(const char *_uri) {
+bool NexusData::open(const char *_uri) {
 
-// 	file->setFileName(_uri);
-// 	if(!file->open(NexusFile::Read))
-// 		//file = fopen(_uri, "rb+");
-// 		//if(!file)
-// 		return false;
-// 	loadHeader();
-// 	loadIndex();
-// 	return true;
-// }
+	file->setFileName(_uri);
+	if(!file->open(NexusFile::Read))
+		//file = fopen(_uri, "rb+");
+		//if(!file)
+		return false;
+	loadHeader();
+	loadIndex();
+	return true;
+}
 
 // void NexusData::close() {
 // 	flush();

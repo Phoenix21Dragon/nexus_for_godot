@@ -92,7 +92,7 @@ public:
 
 	NexusData();
 	virtual ~NexusData();
-	// bool open(const char *uri);
+	bool open(const char *uri);
 	// void close();
 	// virtual void flush();
 
