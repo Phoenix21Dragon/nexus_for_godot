@@ -4,7 +4,7 @@
 #include <vcg/space/point3.h>
 #include <vcg/space/color4.h>
 #include "trianglesoup.h"
-#include <QString>
+// #include <QString>
 
 // stuff to define the mesh
 #include <vcg/complex/complex.h>
@@ -59,7 +59,7 @@ class AVertex  : public vcg::Vertex<
 		vcg::vertex::Mark,
 		vcg::vertex::BitFlags> {
 public:
-	quint32 node;
+	unsigned int node;
 	AVertex() { q.SetZero(); } //TODO remove this, it's only because of a stupid assert is valid on copy
 	//int position;
 	vcg::math::Quadric<double> &Qd() {return q;}
@@ -97,7 +97,7 @@ class AFace: public vcg::Face<
 		vcg::face::VertexRef,
 		vcg::face::BitFlags> {
 public:
-	quint32 node;
+	unsigned int node;
 	bool operator<(const AFace &t) const {
 		return node < t.node;
 	}
@@ -110,26 +110,26 @@ public:
 	void load(Cloud &soup);
 	//void lock(std::vector<bool> &locked);
 	void lockVertices();
-	void save(Soup &soup, quint32 node);
-	void getTriangles(Triangle *triangles, quint32 node);
-	void getVertices(Splat *vertices, quint32 node);
+	void save(Soup &soup, unsigned int node);
+	void getTriangles(Triangle *triangles, unsigned int node);
+	void getVertices(Splat *vertices, unsigned int node);
 
-	float simplify(quint16 target_faces, Simplification method);
-	std::vector<AVertex> simplifyCloud(quint16 target_vertices); //return removed vertices
+	float simplify(unsigned short target_faces, Simplification method);
+	std::vector<AVertex> simplifyCloud(unsigned short target_vertices); //return removed vertices
 	float averageDistance();
 
-	void savePly(QString filename);
+	void savePly(std::string filename);
 	nx::Node getNode();
-	quint32 serializedSize(const nx::Signature &sig);
+	unsigned int serializedSize(const nx::Signature &sig);
 	//appends nodes found in the mesh
-	void serialize(uchar *buffer, nx::Signature &sig, std::vector<nx::Patch> &patches);
+	void serialize(unsigned char *buffer, nx::Signature &sig, std::vector<nx::Patch> &patches);
 
 	vcg::Sphere3f boundingSphere();
 	nx::Cone3s normalsCone();
 
-	float randomSimplify(quint16 target_faces);
+	float randomSimplify(unsigned short target_faces);
 	void quadricInit();
-	float quadricSimplify(quint16 target_faces);
+	float quadricSimplify(unsigned short target_faces);
 
 	float edgeLengthError();
 

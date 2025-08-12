@@ -19,7 +19,7 @@ for more details.
 #define NX_TRIANGLESOUP_H
 
 #include <vcg/space/point3.h>
-#include "../common/virtualarray.h"
+// #include "../common/virtualarray.h"
 
 //16  bytes
 struct Vertex {
@@ -33,14 +33,14 @@ struct Vertex {
 };
 
 struct Splat: public Vertex {
-	quint32 node;
+	unsigned int node;
 	float n[3];
 };
 
 //52 bytes.
 struct Triangle {
 	Vertex vertices[3];
-	quint32 node;
+	unsigned int node;
 	int tex;  //which tex this triangle refers to.
 	bool isDegenerate() const {
 		if(vertices[0] == vertices[1] || vertices[0] == vertices[2] || vertices[1] == vertices[2])
@@ -52,15 +52,15 @@ struct Triangle {
 template <class T> class Bin {
 public:
 	T *elements;
-	quint32 *_size;
-	quint32 capacity;
+	unsigned int *_size;
+	unsigned int capacity;
 
 	Bin(): elements(0), _size(0), capacity(0) {}
-	Bin(T *start, quint32 *s, quint32 c):
+	Bin(T *start, unsigned int *s, unsigned int c):
 		elements(start), _size(s), capacity(c) {}
 
-	quint32 size() { if(!_size) return 0; return *_size; }
-	void resize(quint32 s) { *_size = s; }
+	unsigned int size() { if(!_size) return 0; return *_size; }
+	void resize(unsigned int s) { *_size = s; }
 	bool isFull() { return *_size == capacity; }
 	T &operator[](uint n) {
 		assert(n < *_size);
@@ -132,7 +132,7 @@ public:
 		return occupancy[block] == triangles_per_block;
 	}
 
-	quint32 blockUsed(quint64 block) {
+	unsigned int blockUsed(quint64 block) {
 		return occupancy[block];
 	}
 
@@ -150,7 +150,7 @@ public:
 protected:
 	quint64 triangles_per_block;
 	quint64 block_size;
-	std::vector<quint32> occupancy;      //how many triangles per block
+	std::vector<unsigned int> occupancy;      //how many triangles per block
 
 	virtual quint64 blockOffset(quint64 block) { return block * block_size; }
 	virtual quint64 blockSize(quint64 /*block*/) { return block_size; }

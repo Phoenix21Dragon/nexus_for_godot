@@ -16,8 +16,8 @@ GNU General Public License (http://www.gnu.org/licenses/gpl.txt)
 for more details.
 */
 #include <deque>
-#include <QTime>
-#include <QTextStream>
+// #include <QTime>
+// #include <QTextStream>
 #include "meshcoder.h"
 
 using namespace nx;
