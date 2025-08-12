@@ -188,11 +188,12 @@ uint64_t NexusData::loadRam(uint32_t n) {
 
 		int iterations = 1;
 
-		if(sign.flags & Signature::MECO) {
-			meco::MeshDecoder coder(node, d, patches, sign);
-			coder.decode(compressed_size, (unsigned char *)buffer);
+		// if(sign.flags & Signature::MECO) {
+		// 	meco::MeshDecoder coder(node, d, patches, sign);
+		// 	coder.decode(compressed_size, (unsigned char *)buffer);
 
-		} else if(sign.flags & Signature::CORTO) {
+		// } else 
+		if(sign.flags & Signature::CORTO) {
 
 			crt::Decoder decoder(compressed_size, (unsigned char *)buffer);
 
@@ -261,31 +262,6 @@ uint64_t NexusData::loadRam(uint32_t n) {
 
 			loadImageFromData(data, t);
 
-		// 	/*
-		// 	QImage img;
-		// 	bool success = img.loadFromData((uchar *)data.memory, texture.getSize());
-		// 	file->unmap((uchar *)data.memory);
-
-		// 	if(!success) {
-		// 		cerr << "Failed loading texture" << endl;
-		// 		exit(0);
-		// 	}
-
-		// 	img = img.convertToFormat(QImage::Format_RGBA8888);
-		// 	data.width = img.width();
-		// 	data.height = img.height();
-
-		// 	int imgsize = data.width*data.height*4;
-		// 	data.memory = new char[imgsize];
-
-		// 	//flip memory for texture
-		// 	int linesize = img.width()*4;
-		// 	char *mem = data.memory + linesize*(img.height()-1);
-		// 	for(int i = 0; i < img.height(); i++) {
-		// 		memcpy(mem, img.scanLine(i), linesize);
-		// 		mem -= linesize;
-		// 	}
-		// 	*/
 			int imgsize = data.width * data.height * 4;
 			size += imgsize;
 		}
