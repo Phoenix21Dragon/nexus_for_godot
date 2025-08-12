@@ -118,7 +118,7 @@ void nx::Nexus::loadImageFromData(nx::TextureData& data, int t)
     int imgsize = width * height * 4;
     // data.memory = new char[imgsize];
 
-    // Bild vertikal flippen
+    // // Bild vertikal flippen
     // int linesize = width * 4;
     // for (int i = 0; i < height; ++i) {
     //     memcpy(
@@ -128,12 +128,12 @@ void nx::Nexus::loadImageFromData(nx::TextureData& data, int t)
     //     );
     // }
 
-	std::cout 
-	<< "    tex_index: " << t
-	<< " | data.width: " << data.width
-	<< " | data.height: " << data.height
-	<< " | imgsize: " << imgsize
-	<< std::endl;
+	// std::cout 
+	// << "    tex_index: " << t
+	// << " | data.width: " << data.width
+	// << " | data.height: " << data.height
+	// << " | imgsize: " << imgsize
+	// << std::endl;
 
     // free stb buffer
     stbi_image_free(image_data);

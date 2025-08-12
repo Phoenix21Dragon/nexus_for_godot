@@ -167,12 +167,12 @@ uint64_t NexusData::loadRam(uint32_t n) {
 	
 	uint64_t size = node.nvert*sign.vertex.size() + node.nface*sign.face.size();
 
-	std::cout << "loadRam(): node=" << n << std::endl;
-	std::cout 
-	<< "    offset: " << offset
-	<< " | compressed_size: " << compressed_size
-	<< " | size: " << size
-	<< std::endl;
+	// std::cout << "loadRam(): node=" << n << std::endl;
+	// std::cout 
+	// << "    offset: " << offset
+	// << " | compressed_size: " << compressed_size
+	// << " | size: " << size
+	// << std::endl;
 
 	if(!sign.isCompressed()) {
 		d.memory = (char *)file->map(offset, size);
