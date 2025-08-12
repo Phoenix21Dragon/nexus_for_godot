@@ -22,8 +22,8 @@ for more details.
 #include <vcg/space/line3.h>
 #include <vcg/space/intersection3.h>
 
-// #include "../nxszip/meshdecoder.h"
-// #include <corto/decoder.h>
+#include "../nxszip/meshdecoder.h"
+#include <corto/decoder.h>
 
 //#if _MSC_VER >= 1800
 // #include <random>
@@ -179,35 +179,35 @@ uint64_t NexusData::loadRam(uint32_t n) {
 
 	} else {
 
-		// char *buffer = new char[compressed_size];
-		// file->seek(offset);
-		// int64_t r = file->read(buffer, compressed_size);
-		// assert(r == (int64_t)compressed_size);
+		char *buffer = new char[compressed_size];
+		file->seek(offset);
+		int64_t r = file->read(buffer, compressed_size);
+		assert(r == (int64_t)compressed_size);
 
-		// d.memory = new char[size];
+		d.memory = new char[size];
 
-		// int iterations = 1;
+		int iterations = 1;
 
-		// if(sign.flags & Signature::MECO) {
-		// 	meco::MeshDecoder coder(node, d, patches, sign);
-		// 	coder.decode(compressed_size, (unsigned char *)buffer);
+		if(sign.flags & Signature::MECO) {
+			meco::MeshDecoder coder(node, d, patches, sign);
+			coder.decode(compressed_size, (unsigned char *)buffer);
 
-		// } else if(sign.flags & Signature::CORTO) {
+		} else if(sign.flags & Signature::CORTO) {
 
-		// 	crt::Decoder decoder(compressed_size, (unsigned char *)buffer);
+			crt::Decoder decoder(compressed_size, (unsigned char *)buffer);
 
-		// 	decoder.setPositions((float *)d.coords());
-		// 	if(sign.vertex.hasNormals())
-		// 		decoder.setNormals((int16_t *)d.normals(sign, node.nvert));
-		// 	if(sign.vertex.hasColors())
-		// 		decoder.setColors((unsigned char *)d.colors(sign, node.nvert));
-		// 	if(sign.vertex.hasTextures())
-		// 		decoder.setUvs((float *)d.texCoords(sign, node.nvert));
-		// 	if(node.nface)
-		// 		decoder.setIndex(d.faces(sign, node.nvert));
+			decoder.setPositions((float *)d.coords());
+			if(sign.vertex.hasNormals())
+				decoder.setNormals((int16_t *)d.normals(sign, node.nvert));
+			if(sign.vertex.hasColors())
+				decoder.setColors((unsigned char *)d.colors(sign, node.nvert));
+			if(sign.vertex.hasTextures())
+				decoder.setUvs((float *)d.texCoords(sign, node.nvert));
+			if(node.nface)
+				decoder.setIndex(d.faces(sign, node.nvert));
 
-		// 	decoder.decode();
-		// }
+			decoder.decode();
+		}
 
 		// //Shuffle points in compressed point clouds
 		// if(!sign.face.hasIndex()) {
