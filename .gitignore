@@ -47,3 +47,6 @@ _deps
 *.exe
 *.out
 *.app
+
+# Compiled with SConstruct
+*.os

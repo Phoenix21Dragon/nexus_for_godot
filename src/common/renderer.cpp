@@ -157,19 +157,19 @@ void Renderer::render(Nexus *nexus, bool get_view, int wait ) {
 	
 	
 	if(draw_textures)
-		glEnable(GL_TEXTURE_2D);
+		// glEnable(GL_TEXTURE_2D);
 	if(draw_textures && ! draw_texcoords) {
-		glEnable(GL_TEXTURE_2D);
-		glEnable(GL_TEXTURE_GEN_S);
-		glEnable(GL_TEXTURE_GEN_T);
-		glEnable(GL_TEXTURE_GEN_R);
-		glEnable(GL_TEXTURE_GEN_Q);
+		// glEnable(GL_TEXTURE_2D);
+		// glEnable(GL_TEXTURE_GEN_S);
+		// glEnable(GL_TEXTURE_GEN_T);
+		// glEnable(GL_TEXTURE_GEN_R);
+		// glEnable(GL_TEXTURE_GEN_Q);
 	}
 	
-	glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
-	glEnable(GL_COLOR_MATERIAL);
+	// glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
+	// glEnable(GL_COLOR_MATERIAL);
 	
-	glCheckError();
+	// glCheckError();
 	
 	
 #ifdef GL_COMPATIBILITY
@@ -189,7 +189,7 @@ void Renderer::render(Nexus *nexus, bool get_view, int wait ) {
 	if(draw_texcoords) glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 #endif
 	
-	glCheckError();
+	// glCheckError();
 	
 	
 	
@@ -218,14 +218,14 @@ void Renderer::render(Nexus *nexus, bool get_view, int wait ) {
 	
 	
 	if(draw_textures)
-		glDisable(GL_TEXTURE_2D);
+		// glDisable(GL_TEXTURE_2D);
 	if(draw_textures && ! draw_texcoords) {
-		glDisable(GL_TEXTURE_GEN_S);
-		glDisable(GL_TEXTURE_GEN_T);
-		glDisable(GL_TEXTURE_GEN_R);
-		glDisable(GL_TEXTURE_GEN_Q);
+		// glDisable(GL_TEXTURE_GEN_S);
+		// glDisable(GL_TEXTURE_GEN_T);
+		// glDisable(GL_TEXTURE_GEN_R);
+		// glDisable(GL_TEXTURE_GEN_Q);
 	}
-	glDisable(GL_COLOR_MATERIAL);
+	// glDisable(GL_COLOR_MATERIAL);
 }
 
 void Renderer::endFrame() {
@@ -247,7 +247,7 @@ void Renderer::setMode(Renderer::Mode m, bool on) {
 
 void Renderer::renderSelected(Nexus *nexus) {
 	
-	glCheckError();
+	// glCheckError();
 	
 	Signature &sig = nexus->header.signature;
 	bool draw_normals = sig.vertex.hasNormals() && (mode & NORMALS);
@@ -289,19 +289,20 @@ void Renderer::renderSelected(Nexus *nexus) {
 			stats.cone_culled++;
 			continue;
 		}
-		glCheckError();
+		// glCheckError();
 		if(0) { //DEBUG
 			vcg::Point3f c = sphere.Center();
 			float r = node.tight_radius; //sphere.Radius(); //DEBUG
 			
-			glLineWidth(4);
-			glBegin(GL_LINE_STRIP);
+			// glLineWidth(4);
+			// glBegin(GL_LINE_STRIP);
 			for(int i = 0; i < 21; i++)
-				glVertex3f(c[0] + r*sin(i*M_PI/10), c[1] + r*cos(i*M_PI/10), c[2]);
-			glEnd();
+				// glVertex3f(c[0] + r*sin(i*M_PI/10), c[1] + r*cos(i*M_PI/10), c[2]);
+				;
+			// glEnd();
 		}
 		
-		glCheckError();
+		// glCheckError();
 		NodeData &data = nexus->nodedata[i];
 		assert(data.memory);
 		
@@ -312,7 +313,7 @@ void Renderer::renderSelected(Nexus *nexus) {
 		
 		assert(data.vbo);
 		
-		glBindBuffer(GL_ARRAY_BUFFER, data.vbo);
+		// glBindBuffer(GL_ARRAY_BUFFER, data.vbo);
 		uint64_t start = 0;
 
 #ifdef GL_COMPATIBILITY
@@ -368,7 +369,7 @@ void Renderer::renderSelected(Nexus *nexus) {
 #endif
 		}
 		
-		glCheckError();
+		// glCheckError();
 		
 		if(!draw_triangles) {
 			//NexusController::instance().splat_renderer.Render(nvert, 6);
@@ -377,17 +378,18 @@ void Renderer::renderSelected(Nexus *nexus) {
 			float pointsize = ceil(0.3*errors[i]); //2.0; //`0.1 * errors[i];
 			//float pointsize = 1.2*stats.instance_error;
 			if(pointsize > 2) pointsize = 2;
-			glPointSize(pointsize);
+			// glPointSize(pointsize);
 			//glPointSize(4*target_error);
 			
-			glDrawArrays(GL_POINTS, 0, node.nvert);
+			// glDrawArrays(GL_POINTS, 0, node.nvert);
 			stats.patch_rendered++;
 			stats.instance_rendered += node.nvert;
 			continue;
 		}
 		
 		if(draw_triangles)
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, data.fbo);
+			// glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, data.fbo);
+			;
 		
 		uint32_t offset = 0;
 		uint32_t end = 0;
@@ -410,41 +412,44 @@ void Renderer::renderSelected(Nexus *nexus) {
 							
 							if(draw_textures && !draw_texcoords) {
 								Texture &texture = nexus->textures[patch.texture];
-								glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR);
-								glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR);
-								glTexGeni(GL_R, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR);
-								glTexGeni(GL_Q, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR);
+								// glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR);
+								// glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR);
+								// glTexGeni(GL_R, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR);
+								// glTexGeni(GL_Q, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR);
 								
-								glTexGenfv(GL_S, GL_OBJECT_PLANE, &texture.matrix[0]);
-								glTexGenfv(GL_T, GL_OBJECT_PLANE, &texture.matrix[4]);
-								glTexGenfv(GL_R, GL_OBJECT_PLANE, &texture.matrix[8]);
-								glTexGenfv(GL_Q, GL_OBJECT_PLANE, &texture.matrix[12]);
+								// glTexGenfv(GL_S, GL_OBJECT_PLANE, &texture.matrix[0]);
+								// glTexGenfv(GL_T, GL_OBJECT_PLANE, &texture.matrix[4]);
+								// glTexGenfv(GL_R, GL_OBJECT_PLANE, &texture.matrix[8]);
+								// glTexGenfv(GL_Q, GL_OBJECT_PLANE, &texture.matrix[12]);
 							}
 							TextureData &tdata = nexus->texturedata[patch.texture];
-							glBindTexture(GL_TEXTURE_2D, tdata.tex);
+							// glBindTexture(GL_TEXTURE_2D, tdata.tex);
 							//glBindTexture(GL_TEXTURE_2D, 0);
 							last_texture = patch.texture;
 						}
 					} else {
-						glBindTexture(GL_TEXTURE_2D, 0);
+						// glBindTexture(GL_TEXTURE_2D, 0);
 						last_texture = 0xffffffff;
 					}
 				}
 				
 				if(!draw_triangles) {
 					if(nexus->header.signature.face.hasIndex())
-						glDrawArrays(GL_POINTS, 0, node.nvert);
+						// glDrawArrays(GL_POINTS, 0, node.nvert);
+						;
 					else
-						glDrawArrays(GL_POINTS, offset, end - offset);
+						// glDrawArrays(GL_POINTS, offset, end - offset);
+						;
 				} else {
-					glDrawElements(GL_TRIANGLES, (end - offset)*3, GL_UNSIGNED_SHORT, (void *)(offset*3*sizeof(uint16_t)));
+					// glDrawElements(GL_TRIANGLES, (end - offset)*3, GL_UNSIGNED_SHORT, (void *)(offset*3*sizeof(uint16_t)));
+					;
 				}
 				stats.patch_rendered++;
 				stats.instance_rendered += end - offset;
 			}
 			offset = patch.triangle_offset;
 		}
-		glCheckError();
+		// glCheckError();
 	}
 	//	cout << "GPU loaded: " << GPU_loaded <<  endl;
 }

@@ -56,7 +56,7 @@ public:
 	void dropGpu() {
 		mt::mutexlocker locker(&droplock);
 		for(uint i = 0; i < to_drop.size(); i++)
-			glDeleteBuffers(1, (GLuint *)&(to_drop[i]));
+			// glDeleteBuffers(1, (GLuint *)&(to_drop[i]));
 		to_drop.clear();
 	}
 #endif
