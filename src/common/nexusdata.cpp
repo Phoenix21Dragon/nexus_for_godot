@@ -77,6 +77,7 @@ void NexusData::flush() {
 }
 
 void NexusData::loadHeader() {
+	std::cout << "NexusData::loadHeader()" << std::endl;
 	//fread(&header, sizeof(Header), 1, file);
 	int readed = file->read((char *)&header, sizeof(Header));
 	if (readed != sizeof(Header))
@@ -117,6 +118,7 @@ void NexusData::initIndex() {
 }
 
 void NexusData::loadIndex() {
+	std::cout << "NexusData::loadIndex()" << std::endl;
 	initIndex();
 
 	//fread(nodes, sizeof(Node), header.n_nodes, file);

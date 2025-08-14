@@ -28,7 +28,7 @@ bool Scene::load(QStringList inputs, int instances) {
 		nx::Nexus *nexus = new nx::Nexus(&controller);
 
 		if(!nexus->open(inputs[i].toLatin1())) {
-			std::cerr << "Could not load file: " << qPrintable(inputs[i]) << std::endl;
+			std::cout << "Could not load file: " << qPrintable(inputs[i]) << std::endl;
 			return false;
 		}
 		models.push_back(nexus);

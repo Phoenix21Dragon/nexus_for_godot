@@ -63,6 +63,7 @@ bool Nexus::open(const char *_uri) {
 	filename = _uri;
 
 	url = std::string(_uri);
+	std::cout << "url: " << url << std::endl;
 
 	if(url.compare(0, 7, "http://") == 0) {
 		if(!controller)
@@ -88,6 +89,7 @@ bool Nexus::open(const char *_uri) {
 			return false;
 		}
 	} else {
+		std::cout << "controller->load(this);" << std::endl;
 		controller->load(this);
 	}
 	return true;
@@ -147,6 +149,7 @@ void nx::Nexus::loadImageFromData(nx::TextureData& data, int t)
 	}
 }
 void Nexus::loadIndex() {
+	std::cout << "Nexus:loadIndex()" << std::endl;
 	NexusData::loadIndex();
 
 	loaded = true;

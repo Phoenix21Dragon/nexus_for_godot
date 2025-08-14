@@ -40,6 +40,7 @@ size_t nx_curl_write_callback( char *ptr, size_t size, size_t nmemb, void *userd
 
 
 void RamCache::loadNexus(Nexus *nexus) {
+	std::cout << "RamCache::loadNexus" << std::endl;
 	if(nexus->isStreaming()) {
 #ifdef USE_CURL
 		CurlData data(new char[sizeof(Header)], sizeof(Header));
@@ -80,7 +81,7 @@ void RamCache::loadNexus(Nexus *nexus) {
 			nexus->loadHeader();
 			nexus->loadIndex();
 		} catch (const char *error) {
-			std::cerr << "Error: " << error << std::endl;
+			std::cout << "Error: " << error << std::endl;
 			return;
 		}
 
