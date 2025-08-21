@@ -8,7 +8,8 @@
 #include "metric.h"
 #include "nexus.h"
 
-
+#include <godot_cpp/classes/camera3d.hpp>
+#include <godot_cpp/classes/array_mesh.hpp>
 
 namespace nx {
 
@@ -72,7 +73,7 @@ public:
 	void startFrame();
 	void getView(const float *proj = NULL, const float *modelview = NULL, const int *viewport = NULL);
 	void nearFar(Nexus *instance, float &near_distance, float &far_distance);
-	void render(Nexus *instance, bool getview = true, int wait = 0);
+	godot::Ref<godot::ArrayMesh> render(Nexus *instance, bool getview = true, int wait = 0);
 	void endFrame();
 
 	void setMode(Mode mode, bool on);
@@ -85,11 +86,13 @@ public:
 	void setMaxPrimitives(uint32_t t) { max_rendered = t; }
 	void resetStats() { stats.resetAll(); }
 
+	void update_camera_data(const godot::Camera3D *cam);
+
+	uint32_t frame;                //enough for 4 years of 30fps.
 protected:
 	Controller *controller;
 	//    uint32_t current_rendered;
 
-	uint32_t frame;                //enough for 4 years of 30fps.
 
 	uint32_t last_node; //max index of a node selected;
 	std::vector<float> errors;
@@ -97,7 +100,7 @@ protected:
 	Action expand(HeapNode h);
 	float nodeError(uint32_t n, bool &visible);
 
-	void renderSelected(Nexus *nexus);
+	godot::Ref<godot::ArrayMesh> renderSelected(Nexus *nexus);
 
 	std::vector<nx::Token *> locked; //to unlock at the end of the function
 };
