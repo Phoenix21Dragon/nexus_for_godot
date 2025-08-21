@@ -64,6 +64,7 @@ public:
 
 	virtual float nodeError(uint32_t node, bool &visible);
 	virtual Action expand(HeapNode /*h*/) = 0;
+	bool skipNode(uint32_t node);
 
 protected:
 	uint32_t sink;
@@ -73,7 +74,6 @@ protected:
 	int32_t non_blocked;
 	int32_t prefetch;
 
-	bool skipNode(uint32_t node);
 
 private:
 	bool add(uint32_t node);                //returns true if added
