@@ -17,13 +17,16 @@ for more details.
 */
 #include <algorithm>
 #include "traversal.h"
+#include <godot_cpp/classes/node.hpp>
 
-using namespace std;
 using namespace nx;
+using namespace godot;
 
 Traversal::Traversal(): nexus(NULL), prefetch(200) {}
 
 void Traversal::traverse(NexusData *nx) {
+	UtilityFunctions::print("Start Traversing");
+
 	nexus = nx;
 	uint32_t n_nodes = nexus->header.n_nodes;
 	sink =  n_nodes - 1;
@@ -37,9 +40,11 @@ void Traversal::traverse(NexusData *nx) {
 	blocked.resize(n_nodes, false);
 
 	//add all top level nodes
+	UtilityFunctions::print("  Add Top level nodes");
 	for(uint32_t i = 0; i < nexus->nroots; i++)
 		add(i);
 
+	UtilityFunctions::print("  Going through Heap");
 	int node_visited = 0;
 	non_blocked = 1;
 	while(heap.size() && non_blocked > -prefetch) {
@@ -76,6 +81,7 @@ bool Traversal::add(uint32_t n) {
 	if(visited[n]) return false;
 
 	bool visible = true;
+	// UtilityFunctions::print("    Add Heapnode ", n);
 	float error = nodeError(n, visible);
 	//if(!visible) return false;
 	HeapNode h(n, error, visible);
@@ -87,6 +93,7 @@ bool Traversal::add(uint32_t n) {
 }
 
 void Traversal::addChildren(uint32_t n) {
+	// UtilityFunctions::print("  Add Children of Node: ", n);
 	selected[n] = true;
 	Node &node = nexus->nodes[n];
 	for(uint32_t i = node.first_patch; i < node.last_patch(); i++)
@@ -95,6 +102,7 @@ void Traversal::addChildren(uint32_t n) {
 }
 
 void Traversal::blockChildren(uint32_t n) {
+	// UtilityFunctions::print("  Block Children of Node: ", n);
 	Node &node = nexus->nodes[n];
 	for(uint32_t i = node.first_patch; i < node.last_patch(); i++) {
 		uint32_t child = nexus->patches[i].node;

@@ -24,6 +24,8 @@ for more details.
 
 #include <iostream>
 
+#include <godot_cpp/classes/node3d.hpp>
+
 namespace nx {
 
 enum MetricKind { FRUSTUM = 0, FLAT = 1, DELTA = 2, ORTHO = 3 };
@@ -53,10 +55,16 @@ public:
 	float getError(vcg::Sphere3f &s, float error, bool &visible) {
 		visible = true;
 		float dist = (s.Center() - frustum.viewPoint()).Norm() - s.Radius();
+		// UtilityFunctions::print("      s.Center(): ", s.Center()[0], " ", s.Center()[1], " ", s.Center()[2]);
+		// UtilityFunctions::print("      frustum.viewPoint(): ", frustum.viewPoint()[0], " ", frustum.viewPoint()[1], " ", frustum.viewPoint()[2]);
+		// UtilityFunctions::print("      s.Radius(): ", s.Radius());
+		// UtilityFunctions::print("      dist from frustum to sphere: ", dist);
 		float zn = frustum.zNear();
+		// UtilityFunctions::print("      frustum.zNear(): ", frustum.zNear());
 		if(dist < zn) dist = zn;
 
 		float res = frustum.resolution(dist);
+		// UtilityFunctions::printt("      frustum.resolution(): ", res);
 		if(res <= 0.000001f) res = 0.000001f;
 		error = error/res;
 		if(culling) {
@@ -72,6 +80,7 @@ public:
 				error *= 0.001f;
 			}
 		}
+		// UtilityFunctions::print("      error: ", error, " visible: ", visible);
 		return error;
 	}
 };

@@ -17,7 +17,6 @@ for more details.
 */
 #ifndef NX_NEXUS_H
 #define NX_NEXUS_H
-
 #include "nexusdata.h"
 
 #include <QString>

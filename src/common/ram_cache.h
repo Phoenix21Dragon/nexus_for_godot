@@ -47,6 +47,7 @@ protected:
 	}
 #endif
 	void middle() {
+		// std::cout << "RamCache::middle()" << std::endl;
 		mt::mutexlocker locker(&loading_mutex);
 		if(loading.size()) {
 			loadNexus(loading.front());

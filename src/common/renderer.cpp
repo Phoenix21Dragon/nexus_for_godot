@@ -106,7 +106,7 @@ void Renderer::nearFar(Nexus *nexus, float &neard, float &fard) {
 	if(fd > fard) fard = fd;
 }
 
-void Renderer::render(Nexus *nexus, bool get_view, int wait ) {
+	UtilityFunctions::print("\n\nRender Frame ", frame);
 	controller = nexus->controller;
 	if(!nexus->isReady()) return;
 	
@@ -272,6 +272,7 @@ void Renderer::renderSelected(Nexus *nexus) {
 }
 
 Traversal::Action Renderer::expand(HeapNode h) {
+	// UtilityFunctions::print("  Expand Node: ", h.node, "?");
 	if(h.node > last_node) last_node = h.node;
 	
 	Nexus *nx = (Nexus *)nexus;
@@ -284,8 +285,10 @@ Traversal::Action Renderer::expand(HeapNode h) {
 	
 	nx->controller->addToken(&token);
 	
+	// UtilityFunctions::print("      h.error=", h.error, " < target_error=", target_error); 
 	if(h.node != 0 && (h.error < target_error ||
 					   (max_rendered && stats.instance_rendered > max_rendered))) {
+		// UtilityFunctions::print("      BLOCK");
 		return BLOCK;
 	}
 	
@@ -296,14 +299,17 @@ Traversal::Action Renderer::expand(HeapNode h) {
 		if(h.visible) { //TODO check proper working on large models
 			bool visible;
 			vcg::Sphere3f sphere = node.tightSphere();
+			// UtilityFunctions::print("      metric.getError() with tightSphere of node ", h.node);
 			metric.getError(sphere, node.error, visible);
 			if(visible)
 				stats.instance_rendered += node.nvert/2;
 		}
 		locked.push_back(&token);
+		// UtilityFunctions::print("      EXPAND");
 		return EXPAND;
 		
 	} else {
+		// UtilityFunctions::print("      BLOCK because tocken.lock() is false");
 		return BLOCK;
 	}
 }
@@ -311,6 +317,7 @@ Traversal::Action Renderer::expand(HeapNode h) {
 
 float Renderer::nodeError(uint32_t n, bool &visible) {
 	Node &node = ((Nexus *)nexus)->nodes[n];
+	// UtilityFunctions::print("    metric.getError() with node.sphere of node ", n);
 	return metric.getError(node.sphere, node.error, visible); //here we must use the saturated radius.
 	//vcg::Sphere3f sphere = node.tightSphere();
 	//return metric.getError(sphere, node.error, visible); //here we must use the saturated radius.

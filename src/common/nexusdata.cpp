@@ -33,6 +33,7 @@ for more details.
 using namespace std;
 using namespace vcg;
 using namespace nx;
+using namespace godot;
 
 uint16_t *NodeData::faces(Signature &sig, uint32_t nvert, char *mem) {
 	return (uint16_t  *)(mem + nvert*sig.vertex.size());
@@ -77,7 +78,7 @@ void NexusData::flush() {
 }
 
 void NexusData::loadHeader() {
-	std::cout << "NexusData::loadHeader()" << std::endl;
+	// std::cout << "NexusData::loadHeader()" << std::endl;
 	//fread(&header, sizeof(Header), 1, file);
 	int readed = file->read((char *)&header, sizeof(Header));
 	if (readed != sizeof(Header))
@@ -118,7 +119,7 @@ void NexusData::initIndex() {
 }
 
 void NexusData::loadIndex() {
-	std::cout << "NexusData::loadIndex()" << std::endl;
+	// std::cout << "NexusData::loadIndex()" << std::endl;
 	initIndex();
 
 	//fread(nodes, sizeof(Node), header.n_nodes, file);
@@ -152,10 +153,12 @@ uint32_t NexusData::size(uint32_t node) {
 }
 
 uint64_t NexusData::loadRam(uint32_t n) {
-
+	UtilityFunctions::print("LOAD NODE ", n, " INTO RAM");
 	Signature &sign = header.signature;
 	Node &node = nodes[n];
 	uint64_t offset = node.getBeginOffset();
+
+	UtilityFunctions::print("  node.error: ", node.error);
 
 	NodeData &d = nodedata[n];
 	uint64_t compressed_size = node.getEndOffset() - offset;
@@ -279,6 +282,7 @@ uint64_t NexusData::loadRam(uint32_t n) {
 			size += imgsize;
 		}
 	}
+	UtilityFunctions::print("FINISHED LOAD NODE ", n, " INTO RAM");
 	return size;
 }
 

@@ -17,7 +17,9 @@ for more details.
 */
 #include <vcg/space/point4.h>
 #include "frustum.h"
+#include <godot_cpp/classes/node3d.hpp>
 
+using namespace godot;
 using namespace vcg;
 
 void Frustum::setModel(const float *model) {
@@ -34,17 +36,34 @@ void Frustum::setModel(const float *model) {
 void Frustum::setView(const float *_proj, const float *_model, const int *_viewport) {
 	Matrix44f proj(_proj);
 	proj.transposeInPlace();
+	// UtilityFunctions::print("=== setView() START ===");
+	// UtilityFunctions::print("proj (after transpose):");
+	for (int r = 0; r < 4; r++) {
+		// UtilityFunctions::print(proj.ElementAt(r,0), " ", proj.ElementAt(r,1), " ",
+		// 						proj.ElementAt(r,2), " ", proj.ElementAt(r,3));
+	}
+
 	Matrix44f model(_model);
 	model.transposeInPlace();
+	// UtilityFunctions::print("model (after transpose):");
+	for (int r = 0; r < 4; r++) {
+		// UtilityFunctions::print(model.ElementAt(r,0), " ", model.ElementAt(r,1), " ",
+		// 						model.ElementAt(r,2), " ", model.ElementAt(r,3));
+	}
+
 	int viewport[4];
 	memcpy(viewport, _viewport, 4*sizeof(int));
+	// UtilityFunctions::print("viewport: ", viewport[0], ", ", viewport[1], ", ", viewport[2], ", ", viewport[3]);
 
 	Matrix44f imodel = Inverse(model);
 	view_point = imodel * Point3f(0, 0, 0);
+	// UtilityFunctions::print("Camera world position: ", view_point[0], ", ", view_point[1], ", ", view_point[2]);
+
 	view_dir = imodel * Point3f(0, 0, -1) - view_point;
 	_scale = view_dir.SquaredNorm();
 	view_dir /= _scale;
 	_scale = 1.0f/sqrt(_scale);
+	// UtilityFunctions::print("Camera view direction: ", view_dir[0], ", ", view_dir[1], ", ", view_dir[2]);
 
 	//compute resolution
 	Matrix44f iproj = Inverse(proj);
@@ -53,9 +72,16 @@ void Frustum::setView(const float *_proj, const float *_model, const int *_viewp
 	float zNear = c.Norm();
 	float side = (s - c).Norm();
 	_resolution = (2*side/zNear)/viewport[2];
+	// UtilityFunctions::print("zNear (computed from iproj): ", zNear, "  side: ", side, "  resolution: ", _resolution);
 
 	Matrix44f m = proj * model;
 	m.transposeInPlace();
+	// UtilityFunctions::print("proj*model (after transpose):");
+	for (int r = 0; r < 4; r++) {
+		// UtilityFunctions::print(m.ElementAt(r,0), " ", m.ElementAt(r,1), " ",
+		// 						m.ElementAt(r,2), " ", m.ElementAt(r,3));
+	}
+
 	float *v = m.V();
 
 	//top
@@ -76,7 +102,10 @@ void Frustum::setView(const float *_proj, const float *_model, const int *_viewp
 		Point4f &p = planes[i];
 		float d = sqrt(p[0]*p[0] + p[1]*p[1] + p[2]*p[2]);
 		p /= d;
+		// UtilityFunctions::print("Plane ", i, ": ", p[0], ", ", p[1], ", ", p[2], ", ", p[3]);
 	}
+
+	// UtilityFunctions::print("=== setView() END ===");
 }
 
 vcg::Point3f Frustum::viewPoint() {
