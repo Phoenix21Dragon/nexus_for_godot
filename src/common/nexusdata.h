@@ -18,6 +18,11 @@ for more details.
 #ifndef NX_NEXUSDATA_H
 #define NX_NEXUSDATA_H
 
+// QT and godot define emit -> conflict
+#ifdef emit
+#undef emit
+#endif
+
 #include <stdio.h>
 #include <string>
 
@@ -27,12 +32,16 @@ for more details.
 #include <vcg/space/color4.h>
 #include "nexusfile.h"
 
+#include <godot_cpp/classes/array_mesh.hpp>
+
+
 namespace nx {
 
 class NodeData {
 public:
 	NodeData(): memory(NULL), vbo(0), fbo(0) {}
 	char *memory;
+	godot::Ref<godot::ArrayMesh> mesh = nullptr;
 	uint32_t vbo;
 	uint32_t fbo;
 	vcg::Point3f *coords() { return (vcg::Point3f *)memory; }

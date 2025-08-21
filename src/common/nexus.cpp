@@ -26,6 +26,7 @@ for more details.
 
 
 using namespace nx;
+using namespace godot;
 
 
 // void _glCheckError(const char *file, int line) {
@@ -149,7 +150,7 @@ void nx::Nexus::loadImageFromData(nx::TextureData& data, int t)
 	}
 }
 void Nexus::loadIndex() {
-	std::cout << "Nexus:loadIndex()" << std::endl;
+	// std::cout << "Nexus:loadIndex()" << std::endl;
 	NexusData::loadIndex();
 
 	loaded = true;
@@ -178,88 +179,79 @@ bool isPowerOfTwo(unsigned int x) {
 }
 
 uint64_t Nexus::loadGpu(uint32_t n) {
+	UtilityFunctions::print("\nLOAD NODE ", n, " into data.mesh");	
 	NodeData &data = nodedata[n];
 	assert(data.memory);
-	assert(data.vbo == 0);
+	
+	data.mesh.instantiate();	
 
-	Node &node = nodes[n];
+	nx::Node& node = nodes[n];
+	nx::Signature& sig = header.signature;
 
-	Signature &sig = header.signature;
+	uint32_t nvert = node.nvert;
+	uint16_t* indices = data.faces(sig, nvert);
+	vcg::Point3f* coords = data.coords();
+	vcg::Point2f* uvs = data.texCoords(sig, nvert);
+	vcg::Point3s* normals = data.normals(sig, nvert);
+
+
+	uint32_t offset = node.offset;
+	for (uint32_t k = node.first_patch; k < node.last_patch(); k++) {
+		nx::Patch& patch = patches[k];
+		uint32_t tex_index = patch.texture;
+		uint32_t next_offset = patch.triangle_offset;
+		uint32_t face_count = next_offset - offset;
+
+		UtilityFunctions::print("Patch ", k, ": offset=", offset, ", next_offset=", next_offset, ", face_count=", face_count);
+
+		// if (face_count == 0) {
+		// 	continue; // Überspringen
+		// }
+
+		PackedVector3Array godot_vertices;
+		PackedVector3Array godot_normals;
+		PackedVector2Array godot_uvs;
+		PackedInt32Array godot_indices;
+
+		std::map<uint16_t, int> index_map;
+		int local_index = 0;
+
+
+		// Nur betroffene Vertices und Faces sammeln
+		for (uint32_t f = offset; f < next_offset; ++f) {
+			for (int v = 0; v < 3; ++v) {
+				uint16_t global_idx = indices[f * 3 + v];
+
+				if (index_map.find(global_idx) == index_map.end()) {
+					Vector3 pos = Vector3(coords[global_idx].X(), coords[global_idx].Y(), coords[global_idx].Z());
+					godot_vertices.push_back(pos);
+
+					if (normals)
+						godot_normals.push_back(Vector3(normals[global_idx].X(), normals[global_idx].Y(), normals[global_idx].Z()));
+					if (uvs)
+						godot_uvs.push_back(Vector2(uvs[global_idx].X(), uvs[global_idx].Y()));
+
+					index_map[global_idx] = local_index++;
+				}
+				godot_indices.push_back(index_map[global_idx]);
+			}
+		}
+
+		Array arrays;
+		arrays.resize(Mesh::ARRAY_MAX);
+		arrays[Mesh::ARRAY_VERTEX] = godot_vertices;
+		arrays[Mesh::ARRAY_NORMAL] = godot_normals;
+		arrays[Mesh::ARRAY_TEX_UV] = godot_uvs;
+		arrays[Mesh::ARRAY_INDEX] = godot_indices;
+
+		int surface_index = data.mesh->get_surface_count();
+		data.mesh->add_surface_from_arrays(Mesh::PRIMITIVE_TRIANGLES, arrays);
+		data.mesh->surface_set_name(surface_index, "patch: " + itos(k));
+	}
+
 	uint32_t vertex_size = node.nvert*sig.vertex.size();
 	uint32_t face_size = node.nface*sig.face.size();
-
-	char *vertex_start = data.memory;
-	char *face_start = vertex_start + vertex_size;
-
-	// glCheckError();
-
-	// glGenBuffers(1, (GLuint *)(&(data.vbo)));
-	// glBindBuffer(GL_ARRAY_BUFFER, data.vbo);
-	// glBufferData(GL_ARRAY_BUFFER, vertex_size, vertex_start, GL_STATIC_DRAW);
-
-	if(node.nface) {
-		// glGenBuffers(1, (GLuint *)(&(data.fbo)));
-		// glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, data.fbo);
-		// glBufferData(GL_ELEMENT_ARRAY_BUFFER, face_size, face_start, GL_STATIC_DRAW);
-	}
-
 	int size = vertex_size + face_size;
-	if(header.n_textures) {
-		//be sure to load images
-		for(uint32_t p = node.first_patch; p < node.last_patch(); p++) {
-			Patch &patch = patches[p];
-			uint32_t t = patch.texture;
-			if(t == 0xffffffff) continue;
-
-			TextureData &data = texturedata[t];
-			data.count_gpu++;
-			if(texturedata[t].tex) continue;
-			
-			// glCheckError();
-			// glGenTextures(1, &data.tex);
-			// glBindTexture(GL_TEXTURE_2D, data.tex);
-
-			// glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, data.width, data.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data.memory);
-			// glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-			if(isPowerOfTwo(data.width) && isPowerOfTwo(data.height)) {
-				// glGenerateMipmap(GL_TEXTURE_2D);
-				// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-			} else
-				// glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-			
-
-			//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-			//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-			// glCheckError();
-			size += data.width*data.height*3;
-			//careful with cache... might create problems to return different sizes in get drop and size
-			//glGenerateMipmap(GL_TEXTURE_2D);  //Generate mipmaps now!!!
-/*			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 4);
-
-			int red = 0xff0000ff;
-			glTexImage2D(GL_TEXTURE_2D, 1, GL_RGB, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, (char *)&red);
-			
-			int violet = 0x00ffffff;
-			
-			glTexImage2D(GL_TEXTURE_2D, 2, GL_RGB, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, (char *)&violet);
-
-			int blue = 0x0000ffff;
-			
-			glTexImage2D(GL_TEXTURE_2D, 3, GL_RGB, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, (char *)&blue);
-
-			int green = 0x00ff00ff;
-			
-			
-			glTexImage2D(GL_TEXTURE_2D, 4, GL_RGB, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, (char *)&green); */
-			
-			
-
-			
-			// glCheckError();
-		}
-	}
-
 	return size;
 }
 
@@ -267,33 +259,13 @@ uint64_t Nexus::dropGpu(uint32_t n) {
 	NodeData &data = nodedata[n];
 	Node &node = nodes[n];
 
-// #ifndef NO_OPENGL
-// 	glDeleteBuffers(1, (GLuint *)(&(data.vbo)));
-// 	if(node.nface)
-// 		glDeleteBuffers(1, (GLuint *)(&(data.fbo)));
-// #endif
-	data.vbo = data.fbo = 0;
+	data.mesh.unref();
 
 	Signature &sig = header.signature;
 	uint32_t vertex_size = node.nvert*sig.vertex.size();
 	uint32_t face_size = node.nface*sig.face.size();
 	int size = vertex_size + face_size;
 
-	if(header.n_textures) {
-		//be sure to load images
-		for(uint32_t p = node.first_patch; p < node.last_patch(); p++) {
-			uint32_t t = patches[p].texture;
-			if(t == 0xffffffff) continue;
-
-			TextureData &tdata = texturedata[t];
-			tdata.count_gpu--;
-			if(tdata.count_gpu != 0) continue;
-
-			// glDeleteTextures(1, &tdata.tex);
-			tdata.tex = 0;
-			size += tdata.width*tdata.height*3;
-		}
-	}
 	return size;
 }
 
