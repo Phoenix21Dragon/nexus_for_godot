@@ -195,7 +195,7 @@ uint64_t Nexus::loadGpu(uint32_t n) {
 	vcg::Point3s* normals = data.normals(sig, nvert);
 
 
-	uint32_t offset = node.offset;
+	uint32_t offset = 0;
 	for (uint32_t k = node.first_patch; k < node.last_patch(); k++) {
 		nx::Patch& patch = patches[k];
 		uint32_t tex_index = patch.texture;
